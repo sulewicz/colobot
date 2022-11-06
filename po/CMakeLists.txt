@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 2.8)
 
-find_package(Gettext REQUIRED)
+#find_package(Gettext REQUIRED)
 
 set(_potFile colobot.pot)
 

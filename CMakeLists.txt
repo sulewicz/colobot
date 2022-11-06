@@ -61,6 +61,7 @@ if("${CMAKE_SYSTEM_NAME}" MATCHES "Windows")
     set(PLATFORM_LINUX   0)
     set(PLATFORM_MACOSX  0)
     set(PLATFORM_FREEBSD 0)
+    set(PLATFORM_IOS     0)
     set(PLATFORM_OTHER   0)
 
     # Platform-dependent implementation of system.h
@@ -73,6 +74,7 @@ elseif("${CMAKE_SYSTEM_NAME}" MATCHES "Linux")
     set(PLATFORM_GNU     1)
     set(PLATFORM_MACOSX  0)
     set(PLATFORM_FREEBSD 0)
+    set(PLATFORM_IOS     0)
     set(PLATFORM_OTHER   0)
 
     # Platform-dependent implementation of system.h
@@ -85,6 +87,7 @@ elseif("${CMAKE_SYSTEM_NAME}" MATCHES "kFreeBSD" OR "${CMAKE_SYSTEM_NAME}" STREQ
     set(PLATFORM_GNU     1)
     set(PLATFORM_MACOSX  0)
     set(PLATFORM_FREEBSD 0)
+    set(PLATFORM_IOS     0)
     set(PLATFORM_OTHER   0)
 
     # Platform-dependent implementation of system.h
@@ -97,6 +100,7 @@ elseif("${CMAKE_SYSTEM_NAME}" MATCHES "Darwin")
     set(PLATFORM_GNU     0)
     set(PLATFORM_MACOSX  1)
     set(PLATFORM_OTHER   0)
+    set(PLATFORM_IOS     0)
     set(PLATFORM_FREEBSD 0)
 
     # Platform-dependent implementation of system.h
@@ -111,12 +115,28 @@ elseif("${CMAKE_SYSTEM_NAME}" MATCHES "FreeBSD")
     set(PLATFORM_GNU     0)
     set(PLATFORM_MACOSX  0)
     set(PLATFORM_FREEBSD 1)
+    set(PLATFORM_IOS     0)
     set(PLATFORM_OTHER   0)
 
     # Platform-dependent implementation of system.h
     # On FreeBSD we can use *_other
     set(SYSTEM_CPP_MODULE "system_other.cpp")
     set(SYSTEM_H_MODULE "system_other.h")
+    # To avoid CMake warning
+    set(CMAKE_MACOSX_RPATH 1)
+elseif("${CMAKE_SYSTEM_NAME}" MATCHES "IOS")
+    message(STATUS "Build for IOS system")
+    set(PLATFORM_WINDOWS 0)
+    set(PLATFORM_LINUX   0)
+    set(PLATFORM_GNU     0)
+    set(PLATFORM_MACOSX  0)
+    set(PLATFORM_FREEBSD 0)
+    set(PLATFORM_IOS     1)
+    set(PLATFORM_OTHER   0)
+
+    # Platform-dependent implementation of system.h
+    set(SYSTEM_CPP_MODULE "system_ios.cpp")
+    set(SYSTEM_H_MODULE "system_ios.h")
     # To avoid CMake warning
     set(CMAKE_MACOSX_RPATH 1)
 else()
@@ -126,6 +146,7 @@ else()
     set(PLATFORM_GNU     0)
     set(PLATFORM_MACOSX  0)
     set(PLATFORM_FREEBSD 0)
+    set(PLATFORM_IOS     0)
     set(PLATFORM_OTHER   1)
 
     # Platform-dependent implementation of system.h
@@ -167,10 +188,6 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     set(TEST_CXX_FLAGS "-pthread")
     add_definitions(-DNOEXCEPT=noexcept -DHAVE_DEMANGLE)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 3.1)
-        message(FATAL_ERROR "${PROJECT_NAME} requires Clang 3.1 or greater.")
-    endif()
-
     message(STATUS "Detected Clang version 3.1+")
 
     if (${PLATFORM_FREEBSD})
@@ -286,28 +303,28 @@ endif()
 # Searching for packages
 ##
 
-find_package(OpenGL 1.4 REQUIRED)
-find_package(SDL2 REQUIRED)
-find_package(SDL2_image REQUIRED)
-find_package(SDL2_ttf REQUIRED)
-find_package(PNG 1.2 REQUIRED)
-find_package(Gettext REQUIRED)
-find_package(PhysFS REQUIRED)
+#find_package(OpenGLES REQUIRED)
+#find_package(SDL2 REQUIRED)
+#find_package(SDL2_image REQUIRED)
+#find_package(SDL2_ttf REQUIRED)
+#find_package(PNG 1.2 REQUIRED)
+#find_package(Gettext REQUIRED)
+#find_package(PhysFS REQUIRED)
 
 set(Boost_USE_STATIC_LIBS ${BOOST_STATIC})
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
 set(Boost_ADDITIONALVERSION "1.51" "1.51.0")
-find_package(Boost COMPONENTS system filesystem regex REQUIRED)
+#find_package(Boost COMPONENTS system filesystem regex REQUIRED)
 
-find_package(GLEW REQUIRED)
+#find_package(GLEW REQUIRED)
 
-if (OPENAL_SOUND)
-    find_package(OpenAL REQUIRED)
-    include_directories(${OPENAL_INCLUDE_DIR})
-    find_package(LibSndFile REQUIRED)
-endif()
+#if (OPENAL_SOUND)
+#    find_package(OpenAL REQUIRED)
+#    include_directories(${OPENAL_INCLUDE_DIR})
+#    find_package(LibSndFile REQUIRED)
+#endif()
 
 
 if(NOT ASSERTS)
@@ -409,6 +426,12 @@ elseif(PLATFORM_WINDOWS)
 elseif(PLATFORM_MACOSX)
     set(COLOBOT_INSTALL_BIN_DIR ../MacOS CACHE STRING "Colobot binary directory")
     set(COLOBOT_INSTALL_LIB_DIR ../MacOS CACHE STRING "Colobot libraries directory")
+    set(COLOBOT_INSTALL_DATA_DIR . CACHE STRING "Colobot shared data directory")
+    set(COLOBOT_INSTALL_I18N_DIR i18n CACHE SRING "Colobot translations directory")
+    set(COLOBOT_INSTALL_DOC_DIR doc CACHE STRING "Colobot documentation directory")
+    elseif(PLATFORM_IOS)
+    set(COLOBOT_INSTALL_BIN_DIR ../IOS CACHE STRING "Colobot binary directory")
+    set(COLOBOT_INSTALL_LIB_DIR ../IOS CACHE STRING "Colobot libraries directory")
     set(COLOBOT_INSTALL_DATA_DIR . CACHE STRING "Colobot shared data directory")
     set(COLOBOT_INSTALL_I18N_DIR i18n CACHE SRING "Colobot translations directory")
     set(COLOBOT_INSTALL_DOC_DIR doc CACHE STRING "Colobot documentation directory")

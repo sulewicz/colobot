@@ -46,3 +46,6 @@ CMakeLists.txt.user.*
 /CMakeSettings.json
 /.vs
 /out
+
+.DS_Store
+
